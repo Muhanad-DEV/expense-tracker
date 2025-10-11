@@ -70,13 +70,29 @@
   const rowTemplate = document.getElementById('row-template');
 
   const storageKey = 'expense-tracker:v1';
+  const AUTH_KEY = 'expense-tracker-auth';
 
   /**
-   * Store: Array<{ id: string, category: string, amount: number, date: string }>
+   * Get current user from authentication
+   */
+  function getCurrentUser() {
+    try {
+      const auth = localStorage.getItem(AUTH_KEY);
+      return auth ? JSON.parse(auth) : null;
+    } catch (_e) {
+      return null;
+    }
+  }
+
+  /**
+   * Store: Array<{ id: string, user_id: string, category: string, amount: number, date: string }>
    */
   function loadStore() {
     try {
-      const raw = localStorage.getItem(storageKey);
+      const user = getCurrentUser();
+      if (!user) return [];
+      
+      const raw = localStorage.getItem(`${storageKey}:${user.id}`);
       return raw ? JSON.parse(raw) : [];
     } catch (_e) {
       return [];
@@ -84,7 +100,14 @@
   }
 
   function saveStore(data) {
-    localStorage.setItem(storageKey, JSON.stringify(data));
+    try {
+      const user = getCurrentUser();
+      if (!user) return;
+      
+      localStorage.setItem(`${storageKey}:${user.id}`, JSON.stringify(data));
+    } catch (_e) {
+      console.error('Failed to save data:', _e);
+    }
   }
 
   function toast(message) {
@@ -190,7 +213,19 @@
     // NOTE: Date format validation is intentionally missing
 
     const all = loadStore();
-    const newItem = { id: crypto.randomUUID(), category, amount, date };
+    const user = getCurrentUser();
+    if (!user) {
+      formError.textContent = 'User not authenticated. Please login again.';
+      return;
+    }
+    
+    const newItem = { 
+      id: crypto.randomUUID(), 
+      user_id: user.id,
+      category, 
+      amount, 
+      date 
+    };
     all.push(newItem);
     saveStore(all);
     resetForm();

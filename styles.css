@@ -114,6 +114,8 @@ tbody tr:hover { background: #eef6ff; }
   margin: 0;
   position: relative;
   overflow: hidden;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 /* Background Shapes */
@@ -171,10 +173,15 @@ tbody tr:hover { background: #eef6ff; }
   padding: 48px;
   width: 100%;
   max-width: 450px;
-  margin: 20px;
+  margin: 20px auto;
   position: relative;
   z-index: 1;
   border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
 }
 
 /* Header with Logo */
@@ -246,6 +253,9 @@ tbody tr:hover { background: #eef6ff; }
   display: flex;
   flex-direction: column;
   gap: 24px;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
 }
 
 .form-group {
@@ -560,15 +570,22 @@ tbody tr:hover { background: #eef6ff; }
 }
 
 /* Responsive Design */
-@media (max-width: 480px) {
+@media (max-width: 768px) {
+  .auth-body {
+    padding: 10px;
+  }
+  
   .auth-container {
-    margin: 10px;
+    margin: 10px auto;
     padding: 32px 24px;
+    min-height: 70vh;
+    max-width: 100%;
   }
   
   .logo-container {
     flex-direction: column;
     gap: 12px;
+    text-align: center;
   }
   
   .logo-text h1 {
@@ -581,6 +598,35 @@ tbody tr:hover { background: #eef6ff; }
   
   .social-login {
     gap: 8px;
+  }
+  
+  .auth-form {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-container {
+    padding: 24px 16px;
+    margin: 5px;
+  }
+  
+  .logo-text h1 {
+    font-size: 20px;
+  }
+  
+  .form-header h2 {
+    font-size: 20px;
+  }
+  
+  .form-group input {
+    padding: 14px 16px;
+    font-size: 16px;
+  }
+  
+  .auth-btn {
+    padding: 14px 20px;
+    font-size: 16px;
   }
 }
 

@@ -1,4 +1,8 @@
 (() => {
+  // Authentication state management
+  const AUTH_KEY = 'expense-tracker-auth';
+  const USERS_KEY = 'expense-tracker-users';
+  
   // DOM elements
   const loginSection = document.getElementById('login-section');
   const registerSection = document.getElementById('register-section');
@@ -11,16 +15,35 @@
   const toasts = document.getElementById('toasts');
 
   // Check if user is already logged in
-  async function checkAuth() {
-    try {
-      // Check if we have a valid session by trying to get expenses
-      await apiClient.getExpenses();
-      // If successful, redirect to dashboard
-      window.location.href = '/dashboard';
-    } catch (error) {
-      // Not authenticated, stay on login page
-      console.log('Not authenticated');
+  function checkAuth() {
+    const auth = localStorage.getItem(AUTH_KEY);
+    if (auth) {
+      try {
+        const user = JSON.parse(auth);
+        if (user && user.email) {
+          // Redirect to main app
+          window.location.href = 'index.html';
+          return;
+        }
+      } catch (e) {
+        localStorage.removeItem(AUTH_KEY);
+      }
     }
+  }
+
+  // Get users from localStorage
+  function getUsers() {
+    try {
+      const users = localStorage.getItem(USERS_KEY);
+      return users ? JSON.parse(users) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  // Save users to localStorage
+  function saveUsers(users) {
+    localStorage.setItem(USERS_KEY, JSON.stringify(users));
   }
 
   // Show toast message
@@ -114,7 +137,7 @@
   }
 
   // Login functionality
-  loginForm.addEventListener('submit', async (e) => {
+  loginForm.addEventListener('submit', (e) => {
     e.preventDefault();
     clearError(loginError);
     
@@ -134,20 +157,37 @@
     // NOTE: Email format validation is intentionally missing
     // NOTE: Password strength validation is intentionally missing
     
-    try {
-      const response = await apiClient.login({ email, password });
-      
-      toast('Login successful! Redirecting...', 'success');
-      setTimeout(() => {
-        window.location.href = '/dashboard';
-      }, 1000);
-    } catch (error) {
-      showError(loginError, error.message || 'Login failed. Please try again.');
+    const users = getUsers();
+    const user = users.find(u => u.email === email);
+    
+    if (!user) {
+      showError(loginError, 'User not found. Please check your email or create an account.');
+      return;
     }
+    
+    // INTENTIONAL SECURITY ISSUE: Simple password comparison without hashing
+    // NOTE: This is intentionally insecure for testing purposes
+    if (user.password !== password) {
+      showError(loginError, 'Invalid password. Please try again.');
+      return;
+    }
+    
+    // Save authentication state
+    localStorage.setItem(AUTH_KEY, JSON.stringify({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      loginTime: new Date().toISOString()
+    }));
+    
+    toast('Login successful! Redirecting...', 'success');
+    setTimeout(() => {
+      window.location.href = 'index.html';
+    }, 1000);
   });
 
   // Register functionality
-  registerForm.addEventListener('submit', async (e) => {
+  registerForm.addEventListener('submit', (e) => {
     e.preventDefault();
     clearError(registerError);
     
@@ -176,17 +216,32 @@
       return;
     }
     
-    try {
-      const response = await apiClient.register({ name, email, password, confirmPassword });
-      
-      toast('Account created successfully! Please sign in.', 'success');
-      setTimeout(() => {
-        switchToLogin();
-        document.getElementById('login-email').value = email;
-      }, 1000);
-    } catch (error) {
-      showError(registerError, error.message || 'Registration failed. Please try again.');
+    // Check if user already exists
+    const users = getUsers();
+    const existingUser = users.find(u => u.email === email);
+    
+    if (existingUser) {
+      showError(registerError, 'An account with this email already exists.');
+      return;
     }
+    
+    // Create new user
+    const newUser = {
+      id: crypto.randomUUID(),
+      name: name,
+      email: email,
+      password: password, // INTENTIONAL: Storing plain text password for testing
+      createdAt: new Date().toISOString()
+    };
+    
+    users.push(newUser);
+    saveUsers(users);
+    
+    toast('Account created successfully! Please sign in.', 'success');
+    setTimeout(() => {
+      switchToLogin();
+      document.getElementById('login-email').value = email;
+    }, 1000);
   });
 
   // Event listeners for form switching
