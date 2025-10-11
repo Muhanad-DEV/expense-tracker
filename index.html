@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Expense Tracker</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Expense Tracker</h1>
+  </header>
+
+  <main>
+    <section id="add-expense-section">
+      <h2>Add Expense</h2>
+      <form id="expense-form" autocomplete="off">
+        <label>
+          Category
+          <input type="text" id="category" name="category" placeholder="Food, Transport, Coffee" required>
+        </label>
+        <label>
+          Amount (OMR)
+          <input type="number" id="amount" name="amount" step="0.01" min="0" required>
+        </label>
+        <label>
+          Date
+          <input type="date" id="date" name="date" required>
+        </label>
+        <button type="submit">Add</button>
+        <p id="form-error" role="alert" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section id="summary-section">
+      <h2>Monthly Summary</h2>
+      <div class="summary">
+        <span>Month:</span>
+        <input type="month" id="month-picker">
+        <strong id="monthly-total">OMR 0.00</strong>
+        <select id="category-filter" aria-label="Filter by category">
+          <option value="">All categories</option>
+        </select>
+        <button id="export-csv" type="button">Export CSV</button>
+        <button id="clear-all" type="button">Clear All</button>
+      </div>
+    </section>
+
+    <section id="list-section">
+      <h2>Expenses</h2>
+      <div class="filters">
+        <input type="search" id="search" placeholder="Search by category">
+      </div>
+      <table id="expense-table" aria-describedby="list-section">
+        <thead>
+          <tr>
+            <th data-sort="date">Date <span class="sort-ind"></span></th>
+            <th data-sort="category">Category <span class="sort-ind"></span></th>
+            <th data-sort="amount" class="num">Amount <span class="sort-ind"></span></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="2">Total</td>
+            <td class="num" id="table-total">$0.00</td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </section>
+
+    <section id="category-totals-section">
+      <h2>Totals by Category (Selected Month)</h2>
+      <ul id="category-totals"></ul>
+    </section>
+  </main>
+
+  <template id="row-template">
+    <tr>
+      <td class="date"></td>
+      <td class="category"></td>
+      <td class="num amount"></td>
+      <td>
+        <button class="edit" aria-label="Edit">Edit</button>
+        <button class="delete" aria-label="Delete">✕</button>
+      </td>
+    </tr>
+  </template>
+
+  <!-- Edit Modal -->
+  <div id="modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-dialog" role="document">
+      <h3>Edit Expense</h3>
+      <form id="edit-form">
+        <input type="hidden" id="edit-id">
+        <label>Category
+          <input type="text" id="edit-category" required>
+        </label>
+        <label>Amount
+          <input type="number" id="edit-amount" step="0.01" min="0" required>
+        </label>
+        <label>Date
+          <input type="date" id="edit-date" required>
+        </label>
+        <div class="modal-actions">
+          <button type="submit">Save</button>
+          <button type="button" id="modal-cancel">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toasts -->
+  <div id="toasts" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
+
+
