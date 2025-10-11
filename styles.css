@@ -170,7 +170,7 @@ tbody tr:hover { background: #eef6ff; }
   backdrop-filter: blur(20px);
   border-radius: 24px;
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-  padding: 48px;
+  padding: 32px;
   width: 100%;
   max-width: 450px;
   margin: 20px auto;
@@ -179,55 +179,10 @@ tbody tr:hover { background: #eef6ff; }
   border: 1px solid rgba(255, 255, 255, 0.2);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 80vh;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
-/* Header with Logo */
-.auth-header {
-  text-align: center;
-  margin-bottom: 40px;
-}
-
-.logo-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.logo-icon {
-  width: 60px;
-  height: 60px;
-  background: linear-gradient(135deg, var(--primary), var(--primary-600));
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 24px;
-  box-shadow: 0 8px 20px rgba(14, 165, 233, 0.3);
-}
-
-.logo-text h1 {
-  font-size: 32px;
-  margin: 0;
-  color: var(--text);
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--text), var(--primary));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.logo-text p {
-  color: var(--muted);
-  margin: 4px 0 0 0;
-  font-size: 16px;
-  font-weight: 500;
-}
 
 /* Form Header */
 .form-header {
@@ -396,16 +351,6 @@ tbody tr:hover { background: #eef6ff; }
   font-weight: bold;
 }
 
-.forgot-password {
-  color: var(--primary);
-  text-decoration: none;
-  font-size: 14px;
-  transition: color 0.2s;
-}
-
-.forgot-password:hover {
-  color: var(--primary-600);
-}
 
 /* Buttons */
 .auth-btn {
@@ -439,69 +384,6 @@ tbody tr:hover { background: #eef6ff; }
   transform: translateY(0);
 }
 
-/* Social Login */
-.divider {
-  text-align: center;
-  margin: 24px 0;
-  position: relative;
-}
-
-.divider::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: var(--border);
-}
-
-.divider span {
-  background: rgba(255, 255, 255, 0.95);
-  padding: 0 16px;
-  color: var(--muted);
-  font-size: 14px;
-  position: relative;
-  z-index: 1;
-}
-
-.social-login {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.social-btn {
-  padding: 14px 20px;
-  border: 2px solid var(--border);
-  border-radius: 12px;
-  background: white;
-  color: var(--text);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-}
-
-.social-btn:hover {
-  border-color: var(--primary);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.google-btn:hover {
-  border-color: #db4437;
-  color: #db4437;
-}
-
-.github-btn:hover {
-  border-color: #333;
-  color: #333;
-}
 
 /* Auth Switch */
 .auth-switch {
@@ -577,27 +459,13 @@ tbody tr:hover { background: #eef6ff; }
   
   .auth-container {
     margin: 10px auto;
-    padding: 32px 24px;
-    min-height: 70vh;
+    padding: 24px 20px;
+    max-height: 95vh;
     max-width: 100%;
-  }
-  
-  .logo-container {
-    flex-direction: column;
-    gap: 12px;
-    text-align: center;
-  }
-  
-  .logo-text h1 {
-    font-size: 24px;
   }
   
   .form-header h2 {
     font-size: 24px;
-  }
-  
-  .social-login {
-    gap: 8px;
   }
   
   .auth-form {
@@ -607,12 +475,9 @@ tbody tr:hover { background: #eef6ff; }
 
 @media (max-width: 480px) {
   .auth-container {
-    padding: 24px 16px;
+    padding: 20px 16px;
     margin: 5px;
-  }
-  
-  .logo-text h1 {
-    font-size: 20px;
+    max-height: 98vh;
   }
   
   .form-header h2 {
