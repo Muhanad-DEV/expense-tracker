@@ -69,8 +69,13 @@
 
   const rowTemplate = document.getElementById('row-template');
 
+  // Check for required DOM elements
+  if (!form || !categoryInput || !amountInput || !dateInput || !tableBody) {
+    console.error('Required DOM elements not found. Please check the HTML structure.');
+    return;
+  }
+
   const storageKey = 'expense-tracker:v1';
-  const AUTH_KEY = 'expense-tracker-auth';
 
   /**
    * Get current user from authentication
@@ -134,8 +139,8 @@
 
   function render() {
     const all = loadStore();
-    const q = searchInput.value.trim().toLowerCase();
-    const selectedMonth = monthPicker.value || monthOf(new Date().toISOString());
+    const q = searchInput ? searchInput.value.trim().toLowerCase() : '';
+    const selectedMonth = monthPicker ? (monthPicker.value || monthOf(new Date().toISOString())) : monthOf(new Date().toISOString());
     const categoryValue = categoryFilter ? categoryFilter.value : '';
 
     const filtered = all.filter(item =>
@@ -144,22 +149,30 @@
       (monthOf(item.date) === selectedMonth)
     );
 
-    tableBody.innerHTML = '';
-    for (const item of filtered) {
-      const tr = rowTemplate.content.firstElementChild.cloneNode(true);
-      tr.dataset.id = item.id;
-      tr.querySelector('.date').textContent = item.date;
-      tr.querySelector('.category').textContent = item.category;
-      tr.querySelector('.amount').textContent = formatCurrency(Number(item.amount));
-      tableBody.appendChild(tr);
+    if (tableBody) {
+      tableBody.innerHTML = '';
+      for (const item of filtered) {
+        if (rowTemplate && rowTemplate.content) {
+          const tr = rowTemplate.content.firstElementChild.cloneNode(true);
+          tr.dataset.id = item.id;
+          tr.querySelector('.date').textContent = item.date;
+          tr.querySelector('.category').textContent = item.category;
+          tr.querySelector('.amount').textContent = formatCurrency(Number(item.amount));
+          tableBody.appendChild(tr);
+        }
+      }
     }
 
     const tableSum = computeTotals(filtered);
-    tableTotal.textContent = formatCurrency(tableSum);
+    if (tableTotal) {
+      tableTotal.textContent = formatCurrency(tableSum);
+    }
 
     const monthly = all.filter(i => monthOf(i.date) === selectedMonth);
     const monthSum = computeTotals(monthly);
-    monthlyTotal.textContent = formatCurrency(monthSum);
+    if (monthlyTotal) {
+      monthlyTotal.textContent = formatCurrency(monthSum);
+    }
 
     // Category totals for selected month
     if (categoryTotalsList) {
@@ -185,75 +198,79 @@
   }
 
   function resetForm() {
-    categoryInput.value = '';
-    amountInput.value = '';
-    dateInput.value = new Date().toISOString().slice(0, 10);
-    formError.textContent = '';
+    if (categoryInput) categoryInput.value = '';
+    if (amountInput) amountInput.value = '';
+    if (dateInput) dateInput.value = new Date().toISOString().slice(0, 10);
+    if (formError) formError.textContent = '';
   }
 
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const category = categoryInput.value.trim();
-    const amount = Number(amountInput.value);
-    const date = dateInput.value;
+  if (form) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const category = categoryInput ? categoryInput.value.trim() : '';
+      const amount = amountInput ? Number(amountInput.value) : 0;
+      const date = dateInput ? dateInput.value : '';
 
-    // INTENTIONAL VALIDATION ISSUES FOR TESTING:
-    // 1. Amount validation is weakened - accepts 0 and negative values
-    // 2. Category validation is incomplete - doesn't check for empty strings properly
-    // 3. Date validation is missing - doesn't validate date format or empty dates
-    
-    // Only basic validation - intentionally flawed for testing
-    if (!category || !isFinite(amount) || !date) {
-      formError.textContent = 'Please enter a valid category, amount, and date.';
-      return;
-    }
-    
-    // NOTE: amount <= 0 check is intentionally removed to allow 0 and negative amounts
-    // NOTE: Empty string category check is intentionally weakened
-    // NOTE: Date format validation is intentionally missing
+      // INTENTIONAL VALIDATION ISSUES FOR TESTING:
+      // 1. Amount validation is weakened - accepts 0 and negative values
+      // 2. Category validation is incomplete - doesn't check for empty strings properly
+      // 3. Date validation is missing - doesn't validate date format or empty dates
+      
+      // Only basic validation - intentionally flawed for testing
+      if (!category || !isFinite(amount) || !date) {
+        if (formError) formError.textContent = 'Please enter a valid category, amount, and date.';
+        return;
+      }
+      
+      // NOTE: amount <= 0 check is intentionally removed to allow 0 and negative amounts
+      // NOTE: Empty string category check is intentionally weakened
+      // NOTE: Date format validation is intentionally missing
 
-    const all = loadStore();
-    const user = getCurrentUser();
-    if (!user) {
-      formError.textContent = 'User not authenticated. Please login again.';
-      return;
-    }
-    
-    const newItem = { 
-      id: crypto.randomUUID(), 
-      user_id: user.id,
-      category, 
-      amount, 
-      date 
-    };
-    all.push(newItem);
-    saveStore(all);
-    resetForm();
-    render();
-    toast('Expense added');
-  });
-
-  tableBody.addEventListener('click', (e) => {
-    const target = e.target;
-    if (target.classList.contains('delete')) {
-      const tr = target.closest('tr');
-      const id = tr.dataset.id;
-      const all = loadStore().filter(i => i.id !== id);
-      saveStore(all);
-      render();
-      toast('Expense deleted');
-    } else if (target.classList.contains('edit')) {
-      const tr = target.closest('tr');
-      const id = tr.dataset.id;
       const all = loadStore();
-      const item = all.find(i => i.id === id);
-      if (!item) return;
-      openModal(item);
-    }
-  });
+      const user = getCurrentUser();
+      if (!user) {
+        if (formError) formError.textContent = 'User not authenticated. Please login again.';
+        return;
+      }
+      
+      const newItem = { 
+        id: crypto.randomUUID(), 
+        user_id: user.id,
+        category, 
+        amount, 
+        date 
+      };
+      all.push(newItem);
+      saveStore(all);
+      resetForm();
+      render();
+      toast('Expense added');
+    });
+  }
 
-  searchInput.addEventListener('input', render);
-  monthPicker.addEventListener('change', render);
+  if (tableBody) {
+    tableBody.addEventListener('click', (e) => {
+      const target = e.target;
+      if (target.classList.contains('delete')) {
+        const tr = target.closest('tr');
+        const id = tr.dataset.id;
+        const all = loadStore().filter(i => i.id !== id);
+        saveStore(all);
+        render();
+        toast('Expense deleted');
+      } else if (target.classList.contains('edit')) {
+        const tr = target.closest('tr');
+        const id = tr.dataset.id;
+        const all = loadStore();
+        const item = all.find(i => i.id === id);
+        if (!item) return;
+        openModal(item);
+      }
+    });
+  }
+
+  if (searchInput) searchInput.addEventListener('input', render);
+  if (monthPicker) monthPicker.addEventListener('change', render);
   if (categoryFilter) categoryFilter.addEventListener('change', render);
 
   // Export CSV
@@ -369,8 +386,8 @@
   });
 
   // Init
-  if (!dateInput.value) dateInput.value = new Date().toISOString().slice(0, 10);
-  if (!monthPicker.value) monthPicker.value = monthOf(new Date().toISOString());
+  if (dateInput && !dateInput.value) dateInput.value = new Date().toISOString().slice(0, 10);
+  if (monthPicker && !monthPicker.value) monthPicker.value = monthOf(new Date().toISOString());
   render();
 })();
 
