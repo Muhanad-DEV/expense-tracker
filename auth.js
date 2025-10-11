@@ -59,13 +59,66 @@
   // Show error message
   function showError(element, message) {
     element.textContent = message;
-    element.style.display = 'block';
+    element.classList.add('show');
   }
 
   // Clear error message
   function clearError(element) {
     element.textContent = '';
-    element.style.display = 'none';
+    element.classList.remove('show');
+  }
+
+  // Password toggle functionality
+  function setupPasswordToggle(toggleId, inputId) {
+    const toggle = document.getElementById(toggleId);
+    const input = document.getElementById(inputId);
+    
+    if (toggle && input) {
+      toggle.addEventListener('click', () => {
+        const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+        input.setAttribute('type', type);
+        
+        const icon = toggle.querySelector('i');
+        icon.classList.toggle('fa-eye');
+        icon.classList.toggle('fa-eye-slash');
+      });
+    }
+  }
+
+  // Password strength checker
+  function checkPasswordStrength(password) {
+    const strengthBar = document.querySelector('.strength-fill');
+    const strengthText = document.querySelector('.strength-text');
+    
+    if (!strengthBar || !strengthText) return;
+    
+    let strength = 0;
+    let strengthLabel = '';
+    
+    if (password.length >= 6) strength++;
+    if (password.length >= 8) strength++;
+    if (/[A-Z]/.test(password)) strength++;
+    if (/[a-z]/.test(password)) strength++;
+    if (/[0-9]/.test(password)) strength++;
+    if (/[^A-Za-z0-9]/.test(password)) strength++;
+    
+    strengthBar.className = 'strength-fill';
+    
+    if (strength <= 2) {
+      strengthBar.classList.add('weak');
+      strengthLabel = 'Weak';
+    } else if (strength <= 4) {
+      strengthBar.classList.add('fair');
+      strengthLabel = 'Fair';
+    } else if (strength <= 5) {
+      strengthBar.classList.add('good');
+      strengthLabel = 'Good';
+    } else {
+      strengthBar.classList.add('strong');
+      strengthLabel = 'Strong';
+    }
+    
+    strengthText.textContent = `Password strength: ${strengthLabel}`;
   }
 
   // Switch between login and register forms
@@ -194,6 +247,19 @@
   // Event listeners for form switching
   showRegisterBtn.addEventListener('click', switchToRegister);
   showLoginBtn.addEventListener('click', switchToLogin);
+
+  // Setup password toggles
+  setupPasswordToggle('login-password-toggle', 'login-password');
+  setupPasswordToggle('register-password-toggle', 'register-password');
+  setupPasswordToggle('register-confirm-toggle', 'register-confirm');
+
+  // Setup password strength checker
+  const registerPasswordInput = document.getElementById('register-password');
+  if (registerPasswordInput) {
+    registerPasswordInput.addEventListener('input', (e) => {
+      checkPasswordStrength(e.target.value);
+    });
+  }
 
   // Check authentication on page load
   checkAuth();
