@@ -56,6 +56,10 @@ CREATE INDEX IF NOT EXISTS idx_expenses_user_date ON expenses(user_id, date);
 
 -- Sample data removed for clean start
 
+-- Note: The following are example queries for reference only
+-- They should not be executed during schema creation
+
+/*
 -- Authentication Queries
 -- 1) Create new user
 INSERT INTO users (id, name, email, password, created_at) 
@@ -152,5 +156,6 @@ WHERE user_id = :user_id
 GROUP BY month 
 ORDER BY month DESC 
 LIMIT 12;
+*/
 
 

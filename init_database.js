@@ -60,7 +60,7 @@ function insertSampleData() {
 
   // Insert sample users
   const insertUser = db.prepare(`
-    INSERT INTO users (id, name, email, password, created_at, last_login, is_active)
+    INSERT OR IGNORE INTO users (id, name, email, password, created_at, last_login, is_active)
     VALUES (?, ?, ?, ?, ?, ?, ?)
   `);
 
@@ -124,7 +124,7 @@ function insertSampleData() {
 
   // Insert sample expenses
   const insertExpense = db.prepare(`
-    INSERT INTO expenses (id, user_id, category, amount, date, description, created_at, updated_at)
+    INSERT OR IGNORE INTO expenses (id, user_id, category, amount, date, description, created_at, updated_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
@@ -145,7 +145,7 @@ function insertSampleData() {
 
   // Insert user preferences
   const insertPreferences = db.prepare(`
-    INSERT INTO user_preferences (user_id, currency, date_format, theme, notifications)
+    INSERT OR IGNORE INTO user_preferences (user_id, currency, date_format, theme, notifications)
     VALUES (?, ?, ?, ?, ?)
   `);
 
