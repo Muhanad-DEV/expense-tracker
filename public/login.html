@@ -9,43 +9,8 @@
 </head>
 <body class="auth-body">
   <div class="auth-wrapper">
-    <!-- Left Panel - Branding -->
-    <div class="auth-left-panel">
-      <div class="brand-content">
-        <div class="brand-logo">
-          <div class="logo-icon">
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-              <rect width="32" height="32" rx="8" fill="#3B82F6"/>
-              <path d="M8 12L16 8L24 12V20L16 24L8 20V12Z" stroke="white" stroke-width="2" fill="none"/>
-              <path d="M16 8V24" stroke="white" stroke-width="2"/>
-              <path d="M8 12L24 12" stroke="white" stroke-width="2"/>
-            </svg>
-          </div>
-          <h1>ExpenseTracker</h1>
-        </div>
-        <div class="brand-description">
-          <h2>Take control of your finances</h2>
-          <p>Track expenses, manage budgets, and achieve your financial goals with our intuitive expense tracking platform.</p>
-        </div>
-        <div class="brand-features">
-          <div class="feature-item">
-            <div class="feature-icon">✓</div>
-            <span>Real-time expense tracking</span>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">✓</div>
-            <span>Smart categorization</span>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">✓</div>
-            <span>Detailed analytics</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Right Panel - Login Form -->
-    <div class="auth-right-panel">
+    <!-- Centered Form Container -->
+    <div class="auth-center-panel">
       <div class="auth-form-container">
 
         <!-- Login Form -->
@@ -101,27 +66,6 @@
             <p id="login-error" class="error-message" role="alert" aria-live="polite"></p>
           </form>
           
-          <div class="divider">
-            <span>or</span>
-          </div>
-          
-          <div class="social-login">
-            <button class="social-btn google-btn">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M8.16 6.545V9.64H12.84C12.64 10.64 12.04 11.48 11.2 12.08L13.44 13.84C14.88 12.48 15.68 10.56 15.68 8.16C15.68 7.52 15.6 6.88 15.44 6.24H8.16Z" fill="#4285F4"/>
-                <path d="M8.16 16C10.24 16 12.08 15.28 13.44 14.08L11.2 12.32C10.48 12.8 9.6 13.12 8.16 13.12C6.16 13.12 4.48 11.84 3.84 10.08L1.6 11.84C2.96 14.4 5.44 16 8.16 16Z" fill="#34A853"/>
-                <path d="M3.84 10.08C3.68 9.6 3.6 9.12 3.6 8.64C3.6 8.16 3.68 7.68 3.84 7.2L1.6 5.44C0.96 6.72 0.64 8.16 0.64 9.6C0.64 11.04 0.96 12.48 1.6 13.76L3.84 10.08Z" fill="#FBBC05"/>
-                <path d="M8.16 3.2C9.6 3.2 10.88 3.68 11.84 4.64L13.44 3.04C12.08 1.68 10.24 0.64 8.16 0.64C5.44 0.64 2.96 2.24 1.6 4.8L3.84 6.56C4.48 4.8 6.16 3.2 8.16 3.2Z" fill="#EA4335"/>
-              </svg>
-              Continue with Google
-            </button>
-            <button class="social-btn github-btn">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
-              </svg>
-              Continue with GitHub
-            </button>
-          </div>
           
           <p class="auth-switch">
             Don't have an account? 
@@ -213,27 +157,6 @@
             <p id="register-error" class="error-message" role="alert" aria-live="polite"></p>
           </form>
           
-          <div class="divider">
-            <span>or</span>
-          </div>
-          
-          <div class="social-login">
-            <button class="social-btn google-btn">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M8.16 6.545V9.64H12.84C12.64 10.64 12.04 11.48 11.2 12.08L13.44 13.84C14.88 12.48 15.68 10.56 15.68 8.16C15.68 7.52 15.6 6.88 15.44 6.24H8.16Z" fill="#4285F4"/>
-                <path d="M8.16 16C10.24 16 12.08 15.28 13.44 14.08L11.2 12.32C10.48 12.8 9.6 13.12 8.16 13.12C6.16 13.12 4.48 11.84 3.84 10.08L1.6 11.84C2.96 14.4 5.44 16 8.16 16Z" fill="#34A853"/>
-                <path d="M3.84 10.08C3.68 9.6 3.6 9.12 3.6 8.64C3.6 8.16 3.68 7.68 3.84 7.2L1.6 5.44C0.96 6.72 0.64 8.16 0.64 9.6C0.64 11.04 0.96 12.48 1.6 13.76L3.84 10.08Z" fill="#FBBC05"/>
-                <path d="M8.16 3.2C9.6 3.2 10.88 3.68 11.84 4.64L13.44 3.04C12.08 1.68 10.24 0.64 8.16 0.64C5.44 0.64 2.96 2.24 1.6 4.8L3.84 6.56C4.48 4.8 6.16 3.2 8.16 3.2Z" fill="#EA4335"/>
-              </svg>
-              Continue with Google
-            </button>
-            <button class="social-btn github-btn">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
-              </svg>
-              Continue with GitHub
-            </button>
-          </div>
           
           <p class="auth-switch">
             Already have an account? 
