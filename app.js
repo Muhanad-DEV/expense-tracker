@@ -1,4 +1,49 @@
 (() => {
+  // Authentication check
+  const AUTH_KEY = 'expense-tracker-auth';
+  
+  function checkAuth() {
+    const auth = localStorage.getItem(AUTH_KEY);
+    if (!auth) {
+      window.location.href = 'login.html';
+      return false;
+    }
+    
+    try {
+      const user = JSON.parse(auth);
+      if (!user || !user.email) {
+        window.location.href = 'login.html';
+        return false;
+      }
+      
+      // Update user info in header
+      const userName = document.getElementById('user-name');
+      if (userName) {
+        userName.textContent = `Welcome, ${user.name || user.email}`;
+      }
+      
+      return true;
+    } catch (e) {
+      localStorage.removeItem(AUTH_KEY);
+      window.location.href = 'login.html';
+      return false;
+    }
+  }
+  
+  // Check authentication on page load
+  if (!checkAuth()) {
+    return;
+  }
+  
+  // Logout functionality
+  const logoutBtn = document.getElementById('logout-btn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem(AUTH_KEY);
+      window.location.href = 'login.html';
+    });
+  }
+
   const form = document.getElementById('expense-form');
   const categoryInput = document.getElementById('category');
   const amountInput = document.getElementById('amount');
