@@ -12,7 +12,6 @@
   const showLoginBtn = document.getElementById('show-login');
   const loginError = document.getElementById('login-error');
   const registerError = document.getElementById('register-error');
-  const toasts = document.getElementById('toasts');
 
   // Check if user is already logged in
   function checkAuth() {
@@ -21,14 +20,14 @@
       try {
         const user = JSON.parse(auth);
         if (user && user.email) {
-          // Redirect to main app
           window.location.href = 'index.html';
-          return;
+          return true;
         }
       } catch (e) {
         localStorage.removeItem(AUTH_KEY);
       }
     }
+    return false;
   }
 
   // Get users from localStorage
@@ -47,218 +46,180 @@
   }
 
   // Show toast message
-  function toast(message, type = 'success') {
-    if (!toasts) return;
-    const div = document.createElement('div');
-    div.className = `toast toast-${type}`;
-    div.textContent = message;
-    toasts.appendChild(div);
-    setTimeout(() => div.remove(), 3000);
+  function showToast(message, type = 'success') {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+    
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+    container.appendChild(toast);
+    
+    setTimeout(() => toast.classList.add('show'), 10);
+    setTimeout(() => {
+      toast.classList.remove('show');
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
   }
 
   // Show error message
   function showError(element, message) {
-    element.textContent = message;
-    element.classList.add('show');
+    if (element) {
+      element.textContent = message;
+      element.style.display = 'block';
+    }
   }
 
   // Clear error message
   function clearError(element) {
-    element.textContent = '';
-    element.classList.remove('show');
-  }
-
-  // Password toggle functionality
-  function setupPasswordToggle(toggleId, inputId) {
-    const toggle = document.getElementById(toggleId);
-    const input = document.getElementById(inputId);
-    
-    if (toggle && input) {
-      toggle.addEventListener('click', () => {
-        const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
-        input.setAttribute('type', type);
-        
-        const icon = toggle.querySelector('i');
-        icon.classList.toggle('fa-eye');
-        icon.classList.toggle('fa-eye-slash');
-      });
+    if (element) {
+      element.textContent = '';
+      element.style.display = 'none';
     }
   }
 
-  // Password strength checker
-  function checkPasswordStrength(password) {
-    const strengthBar = document.querySelector('.strength-fill');
-    const strengthText = document.querySelector('.strength-text');
-    
-    if (!strengthBar || !strengthText) return;
-    
-    let strength = 0;
-    let strengthLabel = '';
-    
-    if (password.length >= 6) strength++;
-    if (password.length >= 8) strength++;
-    if (/[A-Z]/.test(password)) strength++;
-    if (/[a-z]/.test(password)) strength++;
-    if (/[0-9]/.test(password)) strength++;
-    if (/[^A-Za-z0-9]/.test(password)) strength++;
-    
-    strengthBar.className = 'strength-fill';
-    
-    if (strength <= 2) {
-      strengthBar.classList.add('weak');
-      strengthLabel = 'Weak';
-    } else if (strength <= 4) {
-      strengthBar.classList.add('fair');
-      strengthLabel = 'Fair';
-    } else if (strength <= 5) {
-      strengthBar.classList.add('good');
-      strengthLabel = 'Good';
-    } else {
-      strengthBar.classList.add('strong');
-      strengthLabel = 'Strong';
-    }
-    
-    strengthText.textContent = `Password strength: ${strengthLabel}`;
+  // Validate email format
+  function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 
   // Switch between login and register forms
-  function switchToRegister() {
+  function switchToRegister(e) {
+    if (e) e.preventDefault();
     loginSection.style.display = 'none';
     registerSection.style.display = 'block';
     clearError(loginError);
-    registerForm.reset();
+    if (registerForm) registerForm.reset();
   }
 
-  function switchToLogin() {
+  function switchToLogin(e) {
+    if (e) e.preventDefault();
     registerSection.style.display = 'none';
     loginSection.style.display = 'block';
     clearError(registerError);
-    loginForm.reset();
+    if (loginForm) loginForm.reset();
   }
 
   // Login functionality
-  loginForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    clearError(loginError);
-    
-    const email = document.getElementById('login-email').value.trim();
-    const password = document.getElementById('login-password').value;
-    
-    // INTENTIONAL VALIDATION ISSUES FOR TESTING:
-    // 1. Email validation is weakened - doesn't check proper email format
-    // 2. Password validation is missing - accepts empty passwords
-    // 3. User existence check is incomplete
-    
-    if (!email || !password) {
-      showError(loginError, 'Please enter both email and password.');
-      return;
-    }
-    
-    // NOTE: Email format validation is intentionally missing
-    // NOTE: Password strength validation is intentionally missing
-    
-    const users = getUsers();
-    const user = users.find(u => u.email === email);
-    
-    if (!user) {
-      showError(loginError, 'User not found. Please check your email or create an account.');
-      return;
-    }
-    
-    // INTENTIONAL SECURITY ISSUE: Simple password comparison without hashing
-    // NOTE: This is intentionally insecure for testing purposes
-    if (user.password !== password) {
-      showError(loginError, 'Invalid password. Please try again.');
-      return;
-    }
-    
-    // Save authentication state
-    localStorage.setItem(AUTH_KEY, JSON.stringify({
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      loginTime: new Date().toISOString()
-    }));
-    
-    toast('Login successful! Redirecting...', 'success');
-    setTimeout(() => {
-      window.location.href = 'index.html';
-    }, 1000);
-  });
+  if (loginForm) {
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      clearError(loginError);
+      
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+      
+      // Basic validation
+      if (!email || !password) {
+        showError(loginError, 'Please enter both email and password');
+        return;
+      }
+      
+      if (!isValidEmail(email)) {
+        showError(loginError, 'Please enter a valid email address');
+        return;
+      }
+      
+      // Check user credentials
+      const users = getUsers();
+      const user = users.find(u => u.email === email && u.password === password);
+      
+      if (!user) {
+        showError(loginError, 'Invalid email or password');
+        return;
+      }
+      
+      // Save authentication state
+      const authData = {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        loginTime: new Date().toISOString()
+      };
+      
+      localStorage.setItem(AUTH_KEY, JSON.stringify(authData));
+      
+      showToast('Login successful! Redirecting...', 'success');
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 500);
+    });
+  }
 
   // Register functionality
-  registerForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    clearError(registerError);
-    
-    const name = document.getElementById('register-name').value.trim();
-    const email = document.getElementById('register-email').value.trim();
-    const password = document.getElementById('register-password').value;
-    const confirmPassword = document.getElementById('register-confirm').value;
-    
-    // INTENTIONAL VALIDATION ISSUES FOR TESTING:
-    // 1. Name validation is missing - accepts empty names
-    // 2. Email format validation is missing
-    // 3. Password confirmation validation is weakened
-    // 4. Password strength validation is missing
-    
-    if (!name || !email || !password || !confirmPassword) {
-      showError(registerError, 'Please fill in all fields.');
-      return;
-    }
-    
-    // NOTE: Name length validation is intentionally missing
-    // NOTE: Email format validation is intentionally missing
-    // NOTE: Password strength validation is intentionally missing
-    
-    if (password !== confirmPassword) {
-      showError(registerError, 'Passwords do not match.');
-      return;
-    }
-    
-    // Check if user already exists
-    const users = getUsers();
-    const existingUser = users.find(u => u.email === email);
-    
-    if (existingUser) {
-      showError(registerError, 'An account with this email already exists.');
-      return;
-    }
-    
-    // Create new user
-    const newUser = {
-      id: crypto.randomUUID(),
-      name: name,
-      email: email,
-      password: password, // INTENTIONAL: Storing plain text password for testing
-      createdAt: new Date().toISOString()
-    };
-    
-    users.push(newUser);
-    saveUsers(users);
-    
-    toast('Account created successfully! Please sign in.', 'success');
-    setTimeout(() => {
-      switchToLogin();
-      document.getElementById('login-email').value = email;
-    }, 1000);
-  });
+  if (registerForm) {
+    registerForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      clearError(registerError);
+      
+      const name = document.getElementById('register-name').value.trim();
+      const email = document.getElementById('register-email').value.trim();
+      const password = document.getElementById('register-password').value;
+      const confirmPassword = document.getElementById('register-confirm').value;
+      
+      // Validation
+      if (!name || !email || !password || !confirmPassword) {
+        showError(registerError, 'Please fill in all fields');
+        return;
+      }
+      
+      if (name.length < 2) {
+        showError(registerError, 'Name must be at least 2 characters long');
+        return;
+      }
+      
+      if (!isValidEmail(email)) {
+        showError(registerError, 'Please enter a valid email address');
+        return;
+      }
+      
+      if (password.length < 6) {
+        showError(registerError, 'Password must be at least 6 characters long');
+        return;
+      }
+      
+      if (password !== confirmPassword) {
+        showError(registerError, 'Passwords do not match');
+        return;
+      }
+      
+      // Check if user already exists
+      const users = getUsers();
+      const existingUser = users.find(u => u.email === email);
+      
+      if (existingUser) {
+        showError(registerError, 'An account with this email already exists');
+        return;
+      }
+      
+      // Create new user
+      const newUser = {
+        id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+        name: name,
+        email: email,
+        password: password, // NOTE: Storing plain text for demo purposes
+        createdAt: new Date().toISOString()
+      };
+      
+      users.push(newUser);
+      saveUsers(users);
+      
+      showToast('Account created successfully! Please sign in', 'success');
+      setTimeout(() => {
+        switchToLogin();
+        document.getElementById('login-email').value = email;
+        document.getElementById('login-email').focus();
+      }, 1000);
+    });
+  }
 
   // Event listeners for form switching
-  showRegisterBtn.addEventListener('click', switchToRegister);
-  showLoginBtn.addEventListener('click', switchToLogin);
-
-  // Setup password toggles
-  setupPasswordToggle('login-password-toggle', 'login-password');
-  setupPasswordToggle('register-password-toggle', 'register-password');
-  setupPasswordToggle('register-confirm-toggle', 'register-confirm');
-
-  // Setup password strength checker
-  const registerPasswordInput = document.getElementById('register-password');
-  if (registerPasswordInput) {
-    registerPasswordInput.addEventListener('input', (e) => {
-      checkPasswordStrength(e.target.value);
-    });
+  if (showRegisterBtn) {
+    showRegisterBtn.addEventListener('click', switchToRegister);
+  }
+  
+  if (showLoginBtn) {
+    showLoginBtn.addEventListener('click', switchToLogin);
   }
 
   // Check authentication on page load
