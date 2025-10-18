@@ -1,4 +1,32 @@
-(() => {
+// Global functions for onclick handlers (backup method)
+function showRegisterForm() {
+  console.log('Global showRegisterForm called');
+  const loginForm = document.getElementById('login-form');
+  const registerForm = document.getElementById('register-form');
+  
+  if (loginForm) loginForm.style.display = 'none';
+  if (registerForm) {
+    registerForm.style.display = 'block';
+    registerForm.reset();
+  }
+}
+
+function showLoginForm() {
+  console.log('Global showLoginForm called');
+  const loginForm = document.getElementById('login-form');
+  const registerForm = document.getElementById('register-form');
+  
+  if (registerForm) registerForm.style.display = 'none';
+  if (loginForm) {
+    loginForm.style.display = 'block';
+    loginForm.reset();
+  }
+}
+
+// Wait for DOM to be fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOM loaded, initializing auth system...');
+  
   // Authentication state management
   const AUTH_KEY = 'expense-tracker-auth';
   const USERS_KEY = 'expense-tracker-users';
@@ -307,4 +335,4 @@
   console.log('- registerForm:', registerForm);
   console.log('- showRegisterBtn:', showRegisterBtn);
   console.log('- showLoginBtn:', showLoginBtn);
-})();
+});
