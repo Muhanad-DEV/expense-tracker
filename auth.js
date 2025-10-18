@@ -4,8 +4,6 @@
   const USERS_KEY = 'expense-tracker-users';
   
   // DOM elements
-  const loginSection = document.getElementById('login-section');
-  const registerSection = document.getElementById('register-section');
   const loginForm = document.getElementById('login-form');
   const registerForm = document.getElementById('register-form');
   const showRegisterBtn = document.getElementById('show-register');
@@ -86,16 +84,16 @@
   // Switch between login and register forms
   function switchToRegister(e) {
     if (e) e.preventDefault();
-    loginSection.style.display = 'none';
-    registerSection.style.display = 'block';
+    if (loginForm) loginForm.style.display = 'none';
+    if (registerForm) registerForm.style.display = 'block';
     clearError(loginError);
     if (registerForm) registerForm.reset();
   }
 
   function switchToLogin(e) {
     if (e) e.preventDefault();
-    registerSection.style.display = 'none';
-    loginSection.style.display = 'block';
+    if (registerForm) registerForm.style.display = 'none';
+    if (loginForm) loginForm.style.display = 'block';
     clearError(registerError);
     if (loginForm) loginForm.reset();
   }

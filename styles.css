@@ -104,9 +104,10 @@ tbody tr:hover { background: #eef6ff; }
 .toast-success { background: #059669; }
 .toast-error { background: #dc2626; }
 
-/* Authentication Styles */
+/* Authentication Styles - Wavy Design */
 .auth-body {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: rgba(244, 91, 105, 1);
+  font-family: 'Asap', sans-serif;
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -116,146 +117,129 @@ tbody tr:hover { background: #eef6ff; }
   box-sizing: border-box;
 }
 
-.auth-container {
-  width: 100%;
-  max-width: 420px;
+.login {
+  overflow: hidden;
+  background-color: white;
+  padding: 40px 30px 30px 30px;
+  border-radius: 10px;
+  position: relative;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 5px 10px 10px rgba(2, 128, 144, 0.2);
+  transition: transform 300ms, box-shadow 300ms;
 }
 
-.auth-card {
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-  padding: 40px;
-  animation: slideUp 0.4s ease-out;
+.login::before,
+.login::after {
+  content: '';
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-top-left-radius: 40%;
+  border-top-right-radius: 45%;
+  border-bottom-left-radius: 35%;
+  border-bottom-right-radius: 40%;
+  z-index: -1;
 }
 
-@keyframes slideUp {
+.login::before {
+  left: 40%;
+  bottom: -130%;
+  background-color: rgba(69, 105, 144, 0.15);
+  animation: waves 6s infinite linear;
+}
+
+.login::after {
+  left: 35%;
+  bottom: -125%;
+  background-color: rgba(2, 128, 144, 0.2);
+  animation: waves 7s infinite;
+}
+
+@keyframes waves {
   from {
-    opacity: 0;
-    transform: translateY(20px);
+    transform: rotate(0);
   }
   to {
-    opacity: 1;
-    transform: translateY(0);
+    transform: rotate(360deg);
   }
 }
 
-/* Brand section */
-.brand {
-  text-align: center;
-  margin-bottom: 32px;
-  padding-bottom: 24px;
-  border-bottom: 2px solid #f0f0f0;
-}
-
-.brand h1 {
-  font-size: 32px;
-  margin: 0 0 8px 0;
-  color: #1a1a1a;
-}
-
-.brand p {
-  margin: 0;
-  color: #666;
-  font-size: 14px;
-}
-
-
-/* Auth Section */
-.auth-section h2 {
-  font-size: 24px;
-  margin: 0 0 24px 0;
-  color: #1a1a1a;
-  text-align: center;
-  font-weight: 600;
-}
-
-/* Form Styles */
-.auth-form {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  width: 100%;
-  max-width: 400px;
-  margin: 0 auto;
-}
-
-.auth-form .form-group {
-  margin-bottom: 16px;
-}
-
-.auth-form .form-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 500;
+.login h2 {
+  font-family: 'Asap', sans-serif;
+  margin: 0 0 20px 0;
+  font-size: 28px;
   color: #333;
-  font-size: 14px;
+  text-align: center;
+  font-weight: 700;
 }
 
-.auth-form .form-group input {
+
+/* Login Form Inputs */
+.login > input {
+  font-family: 'Asap', sans-serif;
+  display: block;
+  border-radius: 5px;
+  font-size: 16px;
+  background: white;
   width: 100%;
-  padding: 12px 16px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 15px;
-  transition: all 0.2s;
+  border: 0;
+  padding: 10px 10px;
+  margin: 15px 0;
+  border-bottom: 2px solid #e0e0e0;
+  transition: border-color 0.3s;
   box-sizing: border-box;
 }
 
-.auth-form .form-group input:focus {
+.login > input:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-bottom-color: rgba(244, 91, 105, 1);
 }
 
-/* Auth Buttons */
-.auth-form .btn {
-  width: 100%;
-  padding: 14px;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
+/* Login Button */
+.login > button {
+  font-family: 'Asap', sans-serif;
   cursor: pointer;
-  transition: all 0.2s;
-  margin-top: 8px;
+  color: #fff;
+  font-size: 16px;
+  text-transform: uppercase;
+  width: 100px;
+  border: 0;
+  padding: 10px 0;
+  margin-top: 10px;
+  border-radius: 5px;
+  background-color: rgba(244, 91, 105, 1);
+  transition: background-color 300ms;
+  font-weight: 600;
 }
 
-.auth-form .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-}
-
-.auth-form .btn-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+.login > button:hover {
+  background-color: rgba(234, 81, 95, 1);
 }
 
 /* Error Message */
-.auth-form .error-message {
-  color: #dc2626;
-  font-size: 14px;
-  margin-top: 12px;
+.login .error-message {
+  color: rgba(244, 91, 105, 1);
+  font-size: 13px;
+  margin-top: 10px;
   text-align: center;
-  display: none;
+  min-height: 20px;
+  font-weight: 500;
 }
 
-/* Auth Switch */
-.auth-switch {
-  text-align: center;
-  margin-top: 24px;
-  font-size: 14px;
-  color: #666;
-}
-
-.auth-switch a {
-  color: #667eea;
+/* Switch Link */
+.login .switch-link {
   text-decoration: none;
-  font-weight: 600;
+  color: rgba(69, 105, 144, 0.7);
+  font-size: 13px;
+  display: block;
+  text-align: center;
+  margin-top: 20px;
+  transition: color 0.3s;
 }
 
-.auth-switch a:hover {
-  text-decoration: underline;
+.login .switch-link:hover {
+  color: rgba(2, 128, 144, 1);
 }
 
 /* Toast Container */
