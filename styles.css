@@ -120,13 +120,18 @@ tbody tr:hover { background: #eef6ff; }
 .login {
   overflow: hidden;
   background-color: white;
-  padding: 40px 30px 30px 30px;
-  border-radius: 10px;
+  padding: 40px 35px 35px 35px;
+  border-radius: 12px;
   position: relative;
   width: 400px;
   max-width: 90%;
-  box-shadow: 5px 10px 10px rgba(2, 128, 144, 0.2);
-  transition: transform 300ms, box-shadow 300ms;
+  box-shadow: 0 10px 40px rgba(2, 128, 144, 0.25);
+  transition: all 300ms ease;
+}
+
+.login:hover {
+  box-shadow: 0 15px 50px rgba(2, 128, 144, 0.35);
+  transform: translateY(-2px);
 }
 
 .login::before,
@@ -167,11 +172,26 @@ tbody tr:hover { background: #eef6ff; }
 
 .login h2 {
   font-family: 'Asap', sans-serif;
-  margin: 0 0 20px 0;
+  margin: 0 0 25px 0;
   font-size: 28px;
-  color: #333;
+  color: #2c3e50;
   text-align: center;
   font-weight: 700;
+  letter-spacing: 0.5px;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+.login h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, rgba(244, 91, 105, 1), rgba(2, 128, 144, 1));
+  border-radius: 2px;
 }
 
 
@@ -181,19 +201,26 @@ tbody tr:hover { background: #eef6ff; }
   display: block;
   border-radius: 5px;
   font-size: 16px;
-  background: white;
+  background: #f8f9fa;
   width: 100%;
   border: 0;
-  padding: 10px 10px;
-  margin: 15px 0;
   border-bottom: 2px solid #e0e0e0;
-  transition: border-color 0.3s;
+  padding: 12px 15px;
+  margin: 15px 0;
+  transition: all 0.3s ease;
   box-sizing: border-box;
 }
 
 .login > input:focus {
   outline: none;
+  background: white;
   border-bottom-color: rgba(244, 91, 105, 1);
+  box-shadow: 0 2px 8px rgba(244, 91, 105, 0.1);
+}
+
+.login > input::placeholder {
+  color: #999;
+  font-weight: 400;
 }
 
 /* Login Button */
@@ -203,18 +230,27 @@ tbody tr:hover { background: #eef6ff; }
   color: #fff;
   font-size: 16px;
   text-transform: uppercase;
-  width: 100px;
+  width: 120px;
   border: 0;
-  padding: 10px 0;
-  margin-top: 10px;
+  padding: 12px 0;
+  margin-top: 15px;
   border-radius: 5px;
-  background-color: rgba(244, 91, 105, 1);
-  transition: background-color 300ms;
+  background: linear-gradient(135deg, rgba(244, 91, 105, 1) 0%, rgba(234, 81, 95, 1) 100%);
+  transition: all 300ms ease;
   font-weight: 600;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 12px rgba(244, 91, 105, 0.3);
 }
 
 .login > button:hover {
-  background-color: rgba(234, 81, 95, 1);
+  background: linear-gradient(135deg, rgba(234, 81, 95, 1) 0%, rgba(224, 71, 85, 1) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(244, 91, 105, 0.4);
+}
+
+.login > button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(244, 91, 105, 0.3);
 }
 
 /* Error Message */
@@ -230,16 +266,21 @@ tbody tr:hover { background: #eef6ff; }
 /* Switch Link */
 .login .switch-link {
   text-decoration: none;
-  color: rgba(69, 105, 144, 0.7);
+  color: rgba(69, 105, 144, 0.8);
   font-size: 13px;
   display: block;
   text-align: center;
-  margin-top: 20px;
-  transition: color 0.3s;
+  margin-top: 25px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  padding: 8px;
+  border-radius: 5px;
 }
 
 .login .switch-link:hover {
   color: rgba(2, 128, 144, 1);
+  background: rgba(2, 128, 144, 0.05);
+  transform: scale(1.02);
 }
 
 /* Toast Container */
