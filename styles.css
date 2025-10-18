@@ -750,6 +750,29 @@ input, select {
   transform: scale(1.02);
 }
 
+/* New Switch Button Styles */
+.login .switch-btn {
+  background: none;
+  border: none;
+  color: rgba(69, 105, 144, 0.8);
+  font-size: 14px;
+  font-family: 'Asap', sans-serif;
+  cursor: pointer;
+  padding: 12px;
+  margin-top: 20px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  width: 100%;
+  text-decoration: underline;
+}
+
+.login .switch-btn:hover {
+  color: rgba(2, 128, 144, 1);
+  background: rgba(2, 128, 144, 0.05);
+  transform: scale(1.02);
+}
+
 /* Toast Container */
 #toast-container {
   position: fixed;

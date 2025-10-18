@@ -1,338 +1,217 @@
-// Global functions for onclick handlers (backup method)
+// Simple Authentication System
+console.log('Auth system loading...');
+
+// Authentication constants
+const AUTH_KEY = 'expense-tracker-auth';
+const USERS_KEY = 'expense-tracker-users';
+
+// Initialize sample users
+function initUsers() {
+  const users = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+  if (users.length === 0) {
+    const sampleUsers = [
+      { id: 'user1', name: 'Test User', email: 'test@example.com', password: 'password123' },
+      { id: 'user2', name: 'Demo User', email: 'demo@example.com', password: 'demo123' }
+    ];
+    localStorage.setItem(USERS_KEY, JSON.stringify(sampleUsers));
+    console.log('Sample users created');
+  }
+}
+
+// Form switching functions
 function showRegisterForm() {
-  console.log('Global showRegisterForm called');
+  console.log('Showing register form');
   const loginForm = document.getElementById('login-form');
   const registerForm = document.getElementById('register-form');
   
   if (loginForm) loginForm.style.display = 'none';
-  if (registerForm) {
-    registerForm.style.display = 'block';
-    registerForm.reset();
-  }
+  if (registerForm) registerForm.style.display = 'block';
 }
 
 function showLoginForm() {
-  console.log('Global showLoginForm called');
+  console.log('Showing login form');
   const loginForm = document.getElementById('login-form');
   const registerForm = document.getElementById('register-form');
   
   if (registerForm) registerForm.style.display = 'none';
-  if (loginForm) {
-    loginForm.style.display = 'block';
-    loginForm.reset();
+  if (loginForm) loginForm.style.display = 'block';
+}
+
+// Show error message
+function showError(elementId, message) {
+  const element = document.getElementById(elementId);
+  if (element) {
+    element.textContent = message;
+    element.style.display = 'block';
   }
 }
 
-// Wait for DOM to be fully loaded
+// Clear error message
+function clearError(elementId) {
+  const element = document.getElementById(elementId);
+  if (element) {
+    element.textContent = '';
+    element.style.display = 'none';
+  }
+}
+
+// Show toast notification
+function showToast(message, type = 'success') {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+  
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.textContent = message;
+  container.appendChild(toast);
+  
+  setTimeout(() => toast.classList.add('show'), 10);
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+// Login function
+function handleLogin(event) {
+  event.preventDefault();
+  console.log('Login form submitted');
+  
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  
+  if (!email || !password) {
+    showError('login-error', 'Please enter both email and password');
+    return;
+  }
+  
+  const users = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+  const user = users.find(u => u.email === email && u.password === password);
+  
+  if (!user) {
+    showError('login-error', 'Invalid email or password');
+    return;
+  }
+  
+  // Save authentication
+  localStorage.setItem(AUTH_KEY, JSON.stringify({
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    loginTime: new Date().toISOString()
+  }));
+  
+  showToast('Login successful! Redirecting...', 'success');
+  setTimeout(() => {
+    window.location.href = 'index.html';
+  }, 500);
+}
+
+// Register function
+function handleRegister(event) {
+  event.preventDefault();
+  console.log('Register form submitted');
+  
+  const name = document.getElementById('register-name').value.trim();
+  const email = document.getElementById('register-email').value.trim();
+  const password = document.getElementById('register-password').value;
+  const confirmPassword = document.getElementById('register-confirm').value;
+  
+  if (!name || !email || !password || !confirmPassword) {
+    showError('register-error', 'Please fill in all fields');
+    return;
+  }
+  
+  if (password !== confirmPassword) {
+    showError('register-error', 'Passwords do not match');
+    return;
+  }
+  
+  if (password.length < 6) {
+    showError('register-error', 'Password must be at least 6 characters');
+    return;
+  }
+  
+  const users = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+  
+  if (users.find(u => u.email === email)) {
+    showError('register-error', 'Email already exists');
+    return;
+  }
+  
+  // Create new user
+  const newUser = {
+    id: 'user_' + Date.now(),
+    name: name,
+    email: email,
+    password: password
+  };
+  
+  users.push(newUser);
+  localStorage.setItem(USERS_KEY, JSON.stringify(users));
+  
+  showToast('Account created successfully!', 'success');
+  setTimeout(() => {
+    showLoginForm();
+    document.getElementById('login-email').value = email;
+  }, 1000);
+}
+
+// Initialize when page loads
 document.addEventListener('DOMContentLoaded', function() {
-  console.log('DOM loaded, initializing auth system...');
+  console.log('DOM loaded, setting up auth system');
   
-  // Authentication state management
-  const AUTH_KEY = 'expense-tracker-auth';
-  const USERS_KEY = 'expense-tracker-users';
+  // Initialize users
+  initUsers();
   
-  // DOM elements
+  // Check if already logged in
+  const auth = localStorage.getItem(AUTH_KEY);
+  if (auth) {
+    try {
+      const user = JSON.parse(auth);
+      if (user && user.email) {
+        window.location.href = 'index.html';
+        return;
+      }
+    } catch (e) {
+      localStorage.removeItem(AUTH_KEY);
+    }
+  }
+  
+  // Set up form event listeners
   const loginForm = document.getElementById('login-form');
   const registerForm = document.getElementById('register-form');
-  const showRegisterBtn = document.getElementById('show-register');
-  const showLoginBtn = document.getElementById('show-login');
-  const loginError = document.getElementById('login-error');
-  const registerError = document.getElementById('register-error');
-
-  // Check if user is already logged in
-  function checkAuth() {
-    const auth = localStorage.getItem(AUTH_KEY);
-    if (auth) {
-      try {
-        const user = JSON.parse(auth);
-        if (user && user.email) {
-          window.location.href = 'index.html';
-          return true;
-        }
-      } catch (e) {
-        localStorage.removeItem(AUTH_KEY);
-      }
-    }
-    return false;
-  }
-
-  // Initialize users database with sample data if empty
-  function initializeDatabase() {
-    const users = getUsers();
-    if (users.length === 0) {
-      const sampleUsers = [
-        {
-          id: 'user_1',
-          name: 'Test User',
-          email: 'test@example.com',
-          password: 'password123',
-          createdAt: new Date().toISOString()
-        },
-        {
-          id: 'user_2', 
-          name: 'Demo User',
-          email: 'demo@example.com',
-          password: 'demo123',
-          createdAt: new Date().toISOString()
-        }
-      ];
-      saveUsers(sampleUsers);
-      console.log('Database initialized with sample users');
-    }
-  }
-
-  // Get users from localStorage
-  function getUsers() {
-    try {
-      const users = localStorage.getItem(USERS_KEY);
-      return users ? JSON.parse(users) : [];
-    } catch (e) {
-      console.error('Error getting users:', e);
-      return [];
-    }
-  }
-
-  // Save users to localStorage
-  function saveUsers(users) {
-    try {
-      localStorage.setItem(USERS_KEY, JSON.stringify(users));
-      console.log('Users saved to database:', users.length, 'users');
-    } catch (e) {
-      console.error('Error saving users:', e);
-    }
-  }
-
-  // Show toast message
-  function showToast(message, type = 'success') {
-    const container = document.getElementById('toast-container');
-    if (!container) return;
-    
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
-    toast.textContent = message;
-    container.appendChild(toast);
-    
-    setTimeout(() => toast.classList.add('show'), 10);
-    setTimeout(() => {
-      toast.classList.remove('show');
-      setTimeout(() => toast.remove(), 300);
-    }, 3000);
-  }
-
-  // Show error message
-  function showError(element, message) {
-    if (element) {
-      element.textContent = message;
-      element.style.display = 'block';
-    }
-  }
-
-  // Clear error message
-  function clearError(element) {
-    if (element) {
-      element.textContent = '';
-      element.style.display = 'none';
-    }
-  }
-
-  // Validate email format
-  function isValidEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  }
-
-  // Switch between login and register forms
-  function switchToRegister(e) {
-    if (e) e.preventDefault();
-    console.log('Switching to register form');
-    
-    if (loginForm) {
-      loginForm.style.display = 'none';
-      console.log('Login form hidden');
-    }
-    if (registerForm) {
-      registerForm.style.display = 'block';
-      registerForm.style.visibility = 'visible';
-      console.log('Register form shown');
-      registerForm.reset();
-    }
-    clearError(loginError);
-  }
-
-  function switchToLogin(e) {
-    if (e) e.preventDefault();
-    console.log('Switching to login form');
-    
-    if (registerForm) {
-      registerForm.style.display = 'none';
-      console.log('Register form hidden');
-    }
-    if (loginForm) {
-      loginForm.style.display = 'block';
-      loginForm.style.visibility = 'visible';
-      console.log('Login form shown');
-      loginForm.reset();
-    }
-    clearError(registerError);
-  }
-
-  // Login functionality
+  const showRegisterBtn = document.getElementById('show-register-btn');
+  const showLoginBtn = document.getElementById('show-login-btn');
+  
+  console.log('Elements found:', {
+    loginForm: !!loginForm,
+    registerForm: !!registerForm,
+    showRegisterBtn: !!showRegisterBtn,
+    showLoginBtn: !!showLoginBtn
+  });
+  
   if (loginForm) {
-    loginForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      clearError(loginError);
-      
-      const email = document.getElementById('login-email').value.trim();
-      const password = document.getElementById('login-password').value;
-      
-      // Basic validation
-      if (!email || !password) {
-        showError(loginError, 'Please enter both email and password');
-        return;
-      }
-      
-      if (!isValidEmail(email)) {
-        showError(loginError, 'Please enter a valid email address');
-        return;
-      }
-      
-      // Check user credentials
-      const users = getUsers();
-      const user = users.find(u => u.email === email && u.password === password);
-      
-      if (!user) {
-        showError(loginError, 'Invalid email or password');
-        return;
-      }
-      
-      // Save authentication state
-      const authData = {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        loginTime: new Date().toISOString()
-      };
-      
-      localStorage.setItem(AUTH_KEY, JSON.stringify(authData));
-      
-      showToast('Login successful! Redirecting...', 'success');
-      setTimeout(() => {
-        window.location.href = 'index.html';
-      }, 500);
-    });
+    loginForm.addEventListener('submit', handleLogin);
   }
-
-  // Register functionality
+  
   if (registerForm) {
-    registerForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      clearError(registerError);
-      
-      const name = document.getElementById('register-name').value.trim();
-      const email = document.getElementById('register-email').value.trim();
-      const password = document.getElementById('register-password').value;
-      const confirmPassword = document.getElementById('register-confirm').value;
-      
-      // Validation
-      if (!name || !email || !password || !confirmPassword) {
-        showError(registerError, 'Please fill in all fields');
-        return;
-      }
-      
-      if (name.length < 2) {
-        showError(registerError, 'Name must be at least 2 characters long');
-        return;
-      }
-      
-      if (!isValidEmail(email)) {
-        showError(registerError, 'Please enter a valid email address');
-        return;
-      }
-      
-      if (password.length < 6) {
-        showError(registerError, 'Password must be at least 6 characters long');
-        return;
-      }
-      
-      if (password !== confirmPassword) {
-        showError(registerError, 'Passwords do not match');
-        return;
-      }
-      
-      // Check if user already exists
-      const users = getUsers();
-      const existingUser = users.find(u => u.email === email);
-      
-      if (existingUser) {
-        showError(registerError, 'An account with this email already exists');
-        return;
-      }
-      
-    // Create new user
-    const newUser = {
-      id: 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
-      name: name,
-      email: email,
-      password: password, // NOTE: Storing plain text for demo purposes
-      createdAt: new Date().toISOString()
-    };
-    
-    users.push(newUser);
-    saveUsers(users);
-    
-    console.log('New user created:', newUser);
-    showToast('Account created successfully! Please sign in', 'success');
-    
-    setTimeout(() => {
-      switchToLogin();
-      const emailInput = document.getElementById('login-email');
-      if (emailInput) {
-        emailInput.value = email;
-        emailInput.focus();
-      }
-    }, 1000);
-    });
+    registerForm.addEventListener('submit', handleRegister);
   }
-
-  // Event listeners for form switching
+  
   if (showRegisterBtn) {
-    console.log('Adding click listener to register button');
-    showRegisterBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      console.log('Switch to register clicked - button working!');
-      switchToRegister(e);
+    showRegisterBtn.addEventListener('click', function() {
+      console.log('Register button clicked!');
+      showRegisterForm();
     });
-    
-    // Test if button is clickable
-    showRegisterBtn.style.cursor = 'pointer';
-    showRegisterBtn.style.pointerEvents = 'auto';
-  } else {
-    console.error('showRegisterBtn not found!');
   }
   
   if (showLoginBtn) {
-    console.log('Adding click listener to login button');
-    showLoginBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      console.log('Switch to login clicked - button working!');
-      switchToLogin(e);
+    showLoginBtn.addEventListener('click', function() {
+      console.log('Login button clicked!');
+      showLoginForm();
     });
-    
-    // Test if button is clickable
-    showLoginBtn.style.cursor = 'pointer';
-    showLoginBtn.style.pointerEvents = 'auto';
-  } else {
-    console.error('showLoginBtn not found!');
   }
-
-  // Initialize database and check authentication on page load
-  initializeDatabase();
-  checkAuth();
   
-  // Debug: Log current users in database and DOM elements
-  console.log('Current users in database:', getUsers());
-  console.log('DOM Elements found:');
-  console.log('- loginForm:', loginForm);
-  console.log('- registerForm:', registerForm);
-  console.log('- showRegisterBtn:', showRegisterBtn);
-  console.log('- showLoginBtn:', showLoginBtn);
+  console.log('Auth system initialized successfully');
 });
