@@ -28,19 +28,50 @@
     return false;
   }
 
+  // Initialize users database with sample data if empty
+  function initializeDatabase() {
+    const users = getUsers();
+    if (users.length === 0) {
+      const sampleUsers = [
+        {
+          id: 'user_1',
+          name: 'Test User',
+          email: 'test@example.com',
+          password: 'password123',
+          createdAt: new Date().toISOString()
+        },
+        {
+          id: 'user_2', 
+          name: 'Demo User',
+          email: 'demo@example.com',
+          password: 'demo123',
+          createdAt: new Date().toISOString()
+        }
+      ];
+      saveUsers(sampleUsers);
+      console.log('Database initialized with sample users');
+    }
+  }
+
   // Get users from localStorage
   function getUsers() {
     try {
       const users = localStorage.getItem(USERS_KEY);
       return users ? JSON.parse(users) : [];
     } catch (e) {
+      console.error('Error getting users:', e);
       return [];
     }
   }
 
   // Save users to localStorage
   function saveUsers(users) {
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    try {
+      localStorage.setItem(USERS_KEY, JSON.stringify(users));
+      console.log('Users saved to database:', users.length, 'users');
+    } catch (e) {
+      console.error('Error saving users:', e);
+    }
   }
 
   // Show toast message
@@ -190,36 +221,53 @@
         return;
       }
       
-      // Create new user
-      const newUser = {
-        id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-        name: name,
-        email: email,
-        password: password, // NOTE: Storing plain text for demo purposes
-        createdAt: new Date().toISOString()
-      };
-      
-      users.push(newUser);
-      saveUsers(users);
-      
-      showToast('Account created successfully! Please sign in', 'success');
-      setTimeout(() => {
-        switchToLogin();
-        document.getElementById('login-email').value = email;
-        document.getElementById('login-email').focus();
-      }, 1000);
+    // Create new user
+    const newUser = {
+      id: 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+      name: name,
+      email: email,
+      password: password, // NOTE: Storing plain text for demo purposes
+      createdAt: new Date().toISOString()
+    };
+    
+    users.push(newUser);
+    saveUsers(users);
+    
+    console.log('New user created:', newUser);
+    showToast('Account created successfully! Please sign in', 'success');
+    
+    setTimeout(() => {
+      switchToLogin();
+      const emailInput = document.getElementById('login-email');
+      if (emailInput) {
+        emailInput.value = email;
+        emailInput.focus();
+      }
+    }, 1000);
     });
   }
 
   // Event listeners for form switching
   if (showRegisterBtn) {
-    showRegisterBtn.addEventListener('click', switchToRegister);
+    showRegisterBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      console.log('Switch to register clicked');
+      switchToRegister();
+    });
   }
   
   if (showLoginBtn) {
-    showLoginBtn.addEventListener('click', switchToLogin);
+    showLoginBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      console.log('Switch to login clicked');
+      switchToLogin();
+    });
   }
 
-  // Check authentication on page load
+  // Initialize database and check authentication on page load
+  initializeDatabase();
   checkAuth();
+  
+  // Debug: Log current users in database
+  console.log('Current users in database:', getUsers());
 })();
