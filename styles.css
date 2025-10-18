@@ -342,6 +342,7 @@ input, select {
   margin: 0;
   padding: 20px;
   box-sizing: border-box;
+  position: relative;
 }
 
 .login {
@@ -379,8 +380,8 @@ input, select {
 @media (max-width: 768px) {
   .auth-body {
     padding: 15px;
-    align-items: flex-start;
-    padding-top: 60px;
+    align-items: center;
+    justify-content: center;
   }
   
   .login {
@@ -420,7 +421,8 @@ input, select {
 @media (max-width: 480px) {
   .auth-body {
     padding: 10px;
-    padding-top: 40px;
+    align-items: center;
+    justify-content: center;
   }
   
   .login {
