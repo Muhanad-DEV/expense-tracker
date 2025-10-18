@@ -115,18 +115,36 @@
   // Switch between login and register forms
   function switchToRegister(e) {
     if (e) e.preventDefault();
-    if (loginForm) loginForm.style.display = 'none';
-    if (registerForm) registerForm.style.display = 'block';
+    console.log('Switching to register form');
+    
+    if (loginForm) {
+      loginForm.style.display = 'none';
+      console.log('Login form hidden');
+    }
+    if (registerForm) {
+      registerForm.style.display = 'block';
+      registerForm.style.visibility = 'visible';
+      console.log('Register form shown');
+      registerForm.reset();
+    }
     clearError(loginError);
-    if (registerForm) registerForm.reset();
   }
 
   function switchToLogin(e) {
     if (e) e.preventDefault();
-    if (registerForm) registerForm.style.display = 'none';
-    if (loginForm) loginForm.style.display = 'block';
+    console.log('Switching to login form');
+    
+    if (registerForm) {
+      registerForm.style.display = 'none';
+      console.log('Register form hidden');
+    }
+    if (loginForm) {
+      loginForm.style.display = 'block';
+      loginForm.style.visibility = 'visible';
+      console.log('Login form shown');
+      loginForm.reset();
+    }
     clearError(registerError);
-    if (loginForm) loginForm.reset();
   }
 
   // Login functionality
@@ -249,25 +267,44 @@
 
   // Event listeners for form switching
   if (showRegisterBtn) {
+    console.log('Adding click listener to register button');
     showRegisterBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      console.log('Switch to register clicked');
-      switchToRegister();
+      console.log('Switch to register clicked - button working!');
+      switchToRegister(e);
     });
+    
+    // Test if button is clickable
+    showRegisterBtn.style.cursor = 'pointer';
+    showRegisterBtn.style.pointerEvents = 'auto';
+  } else {
+    console.error('showRegisterBtn not found!');
   }
   
   if (showLoginBtn) {
+    console.log('Adding click listener to login button');
     showLoginBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      console.log('Switch to login clicked');
-      switchToLogin();
+      console.log('Switch to login clicked - button working!');
+      switchToLogin(e);
     });
+    
+    // Test if button is clickable
+    showLoginBtn.style.cursor = 'pointer';
+    showLoginBtn.style.pointerEvents = 'auto';
+  } else {
+    console.error('showLoginBtn not found!');
   }
 
   // Initialize database and check authentication on page load
   initializeDatabase();
   checkAuth();
   
-  // Debug: Log current users in database
+  // Debug: Log current users in database and DOM elements
   console.log('Current users in database:', getUsers());
+  console.log('DOM Elements found:');
+  console.log('- loginForm:', loginForm);
+  console.log('- registerForm:', registerForm);
+  console.log('- showRegisterBtn:', showRegisterBtn);
+  console.log('- showLoginBtn:', showLoginBtn);
 })();
