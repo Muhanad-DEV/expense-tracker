@@ -19,6 +19,78 @@ body {
   background: var(--bg);
   color: var(--text);
   line-height: 1.55;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Add wavy animation background to main app */
+body:not(.auth-body)::before,
+body:not(.auth-body)::after {
+  content: '';
+  position: fixed;
+  width: 600px;
+  height: 600px;
+  border-top-left-radius: 40%;
+  border-top-right-radius: 45%;
+  border-bottom-left-radius: 35%;
+  border-bottom-right-radius: 40%;
+  z-index: -1;
+  pointer-events: none;
+}
+
+body:not(.auth-body)::before {
+  right: -200px;
+  bottom: -300px;
+  background-color: rgba(14, 165, 233, 0.08);
+  animation: waves 8s infinite linear;
+}
+
+body:not(.auth-body)::after {
+  right: -150px;
+  bottom: -250px;
+  background-color: rgba(2, 128, 144, 0.12);
+  animation: waves 10s infinite reverse;
+}
+
+/* Additional floating elements for main app */
+main::before {
+  content: '';
+  position: fixed;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, rgba(14, 165, 233, 0.05), rgba(2, 128, 144, 0.08));
+  left: -100px;
+  top: 20%;
+  z-index: -1;
+  animation: float 12s ease-in-out infinite;
+  pointer-events: none;
+}
+
+main::after {
+  content: '';
+  position: fixed;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(244, 91, 105, 0.06), rgba(234, 81, 95, 0.08));
+  right: -50px;
+  top: 10%;
+  z-index: -1;
+  animation: float 15s ease-in-out infinite reverse;
+  pointer-events: none;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px) rotate(0deg);
+  }
+  33% {
+    transform: translateY(-20px) translateX(10px) rotate(120deg);
+  }
+  66% {
+    transform: translateY(10px) translateX(-5px) rotate(240deg);
+  }
 }
 
 header { 
