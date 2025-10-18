@@ -70,15 +70,25 @@
     
     // Wait for page to load and attach the event
     window.addEventListener('load', function() {
-      console.log('Page fully loaded, attaching button event...');
-      const btn = document.getElementById('show-register-btn');
-      if (btn) {
-        console.log('Button found, adding click listener...');
-        btn.addEventListener('click', testButtonClick);
-        // Also add onclick as backup
-        btn.onclick = testButtonClick;
+      console.log('Page fully loaded, attaching button events...');
+      
+      const registerBtn = document.getElementById('show-register-btn');
+      const loginBtn = document.getElementById('show-login-btn');
+      
+      if (registerBtn) {
+        console.log('Register button found, adding click listener...');
+        registerBtn.addEventListener('click', testButtonClick);
+        registerBtn.onclick = testButtonClick;
       } else {
-        console.error('Button not found!');
+        console.error('Register button not found!');
+      }
+      
+      if (loginBtn) {
+        console.log('Login button found, adding click listener...');
+        loginBtn.addEventListener('click', testLoginClick);
+        loginBtn.onclick = testLoginClick;
+      } else {
+        console.error('Login button not found!');
       }
     });
   </script>

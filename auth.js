@@ -52,6 +52,7 @@ function clearError(elementId) {
   if (element) {
     element.textContent = '';
     element.style.display = 'none';
+    element.style.color = ''; // Reset color to default
   }
 }
 
@@ -144,17 +145,42 @@ function handleRegister(event) {
     id: 'user_' + Date.now(),
     name: name,
     email: email,
-    password: password
+    password: password,
+    created_at: new Date().toISOString()
   };
   
   users.push(newUser);
   localStorage.setItem(USERS_KEY, JSON.stringify(users));
   
-  showToast('Account created successfully!', 'success');
+  // Clear the register form
+  document.getElementById('register-form').reset();
+  clearError('register-error');
+  
+  // Show success message
+  showToast('🎉 Account created successfully! Please log in with your new credentials.', 'success');
+  
+  // Switch to login form and pre-fill email
   setTimeout(() => {
     showLoginForm();
-    document.getElementById('login-email').value = email;
-  }, 1000);
+    const loginEmailField = document.getElementById('login-email');
+    if (loginEmailField) {
+      loginEmailField.value = email;
+      loginEmailField.focus();
+    }
+    
+    // Show additional success message on login form
+    const loginError = document.getElementById('login-error');
+    if (loginError) {
+      loginError.textContent = '✅ Account created! Please enter your password to log in.';
+      loginError.style.color = '#10b981';
+      loginError.style.display = 'block';
+      
+      // Clear this message after 5 seconds
+      setTimeout(() => {
+        clearError('login-error');
+      }, 5000);
+    }
+  }, 1500);
 }
 
 // Initialize when page loads
