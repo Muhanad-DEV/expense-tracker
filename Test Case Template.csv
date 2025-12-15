@@ -1,0 +1,8 @@
+RTM Template,,,,,,,,,,,,,,,
+Project Name,Software Tetsing,,,,Creation Date,,,,,,,,,,
+Project ID,,,,,Last Update Date,,,,,,,,,,
+Project Manager,,,,,Reviewd by,,,,,,,,,,
+,,,,,Review Date,,,,,,,,,,
+,,,,,,,,,,,,,,,
+RID,Use Case,Description,Business Need Justification,TCID,TC Description,Test Design,Test Designer,UAT Test Request,Test Execution,,,Defect,Defect ID,Defect Status,Requiremnt Coverage Status
+,,,,,,,,,Test Env.,UAT Env.,Product Env.,,,,
