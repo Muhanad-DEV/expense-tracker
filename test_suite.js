@@ -1,320 +1,250 @@
 /**
- * Expense Tracker - Browser Test Suite
- * Run from the browser console on the corresponding page.
- * Tests are safe to run repeatedly; they operate on localStorage only.
- *
+ * Expense Tracker - Test Suite Runner
+ * JUnit-style testing framework
+ * 
  * Usage:
- *   - Open login.html in the browser, then run:
- *       ExpenseTestSuite.runAuthTests();
- *   - After logging in and landing on index.html, run:
- *       ExpenseTestSuite.runExpenseTests();
- *       ExpenseTestSuite.runAnalyticsTests();
- *   - Or run all available tests for the current page:
- *       ExpenseTestSuite.runAll();
+ *   1. Load test files in order:
+ *      - test_assertions.js
+ *      - test_data.js
+ *      - test_cases.js
+ *      - test_suite.js
+ *   
+ *   2. Run tests:
+ *      TestSuite.runAll()           // Run all tests
+ *      TestSuite.runAuthTests()     // Run authentication tests only
+ *      TestSuite.runExpenseTests()  // Run expense tests only
+ *      TestSuite.runAnalyticsTests() // Run analytics tests only
  */
-(function () {
-  const AUTH_KEY = 'expense-tracker-auth';
-  const USERS_KEY = 'expense-tracker-users';
 
-  const delay = (ms = 300) => new Promise((resolve) => setTimeout(resolve, ms));
+const TestSuite = {
+  /**
+   * Run all authentication tests
+   */
+  async runAuthTests() {
+    console.log('\n========================================');
+    console.log('Authentication Tests');
+    console.log('========================================');
+    
+    const results = {
+      total: 0,
+      passed: 0,
+      failed: 0
+    };
 
-  const log = {
-    info: (...args) => console.log('[TEST]', ...args),
-    pass: (...args) => console.log('[PASS]', ...args),
-    fail: (...args) => console.error('[FAIL]', ...args),
-  };
-
-  function setInputValue(el, value) {
-    if (!el) return;
-    el.value = value;
-    el.dispatchEvent(new Event('input', { bubbles: true }));
-    el.dispatchEvent(new Event('change', { bubbles: true }));
-  }
-
-  function ensureSampleUser() {
-    const users = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
-    const sample = { id: 'test-user-001', name: 'Test User', email: 'test@example.com', password: 'password123' };
-    if (!users.some((u) => u.email === sample.email)) {
-      users.push(sample);
-      localStorage.setItem(USERS_KEY, JSON.stringify(users));
-      log.info('Seeded sample user');
-    }
-  }
-
-  function getAuthUser() {
-    const auth = localStorage.getItem(AUTH_KEY);
-    if (!auth) return null;
+    // Test User Registration
+    results.total++;
     try {
-      return JSON.parse(auth);
-    } catch (err) {
-      return null;
-    }
-  }
-
-  async function testUserRegistration() {
-    log.info('=== TS_AUTH_001: User Registration ===');
-    localStorage.removeItem(AUTH_KEY);
-
-    const registerBtn = document.getElementById('show-register-btn');
-    const registerForm = document.getElementById('register-form');
-    const loginForm = document.getElementById('login-form');
-
-    if (!registerForm || !loginForm) {
-      log.fail('Registration or login form not found on this page');
-      return false;
-    }
-
-    if (registerBtn) registerBtn.click();
-    if (typeof showRegisterForm === 'function') showRegisterForm();
-    if (registerForm.style.display === 'none') registerForm.style.display = 'block';
-    loginForm.style.display = 'none';
-    await delay(200);
-
-    setInputValue(document.getElementById('register-name'), 'John Doe');
-    setInputValue(document.getElementById('register-email'), 'john.doe@test.com');
-    setInputValue(document.getElementById('register-password'), 'password123');
-    setInputValue(document.getElementById('register-confirm'), 'password123');
-
-    registerForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-    await delay(1000);
-
-    const users = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
-    const userExists = users.some((u) => u.email === 'john.doe@test.com');
-    if (userExists) {
-      log.pass('User registered successfully');
-      return true;
-    }
-    log.fail('User registration failed');
-    return false;
-  }
-
-  async function testUserLogin() {
-    log.info('=== TS_AUTH_004: User Login ===');
-    localStorage.removeItem(AUTH_KEY);
-    ensureSampleUser();
-
-    const loginForm = document.getElementById('login-form');
-    if (!loginForm) {
-      log.fail('Login form not found on this page');
-      return false;
-    }
-
-    setInputValue(document.getElementById('login-email'), 'test@example.com');
-    setInputValue(document.getElementById('login-password'), 'password123');
-
-    loginForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-    await delay(400); // check before redirect fires
-
-    const auth = getAuthUser();
-    if (auth && auth.email === 'test@example.com') {
-      log.pass('User logged in successfully', auth.name || '');
-      return true;
-    }
-    log.fail('Login failed');
-    return false;
-  }
-
-  async function testAddExpense() {
-    log.info('=== TS_EXP_001: Add Expense ===');
-    const auth = getAuthUser();
-    if (!auth) {
-      log.fail('User not logged in. Run login test first.');
-      return false;
-    }
-
-    const storageKey = `expense-tracker:v1:${auth.id}`;
-    const before = JSON.parse(localStorage.getItem(storageKey) || '[]');
-
-    const form = document.getElementById('expense-form');
-    if (!form) {
-      log.fail('Expense form not found on this page');
-      return false;
-    }
-
-    setInputValue(document.getElementById('category'), 'Food');
-    setInputValue(document.getElementById('amount'), '25.50');
-    setInputValue(document.getElementById('date'), '2025-11-01');
-
-    form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-    await delay(800);
-
-    const after = JSON.parse(localStorage.getItem(storageKey) || '[]');
-    if (after.length === before.length + 1) {
-      const added = after.find((e) => e.category === 'Food' && Number(e.amount) === 25.5);
-      if (added) {
-        log.pass('Expense added successfully', added);
-        return true;
+      const passed = await TestCases.testUserRegistration();
+      if (passed) {
+        results.passed++;
+        console.log('[PASS] User Registration Test Suite');
+      } else {
+        results.failed++;
+        console.log('[FAIL] User Registration Test Suite');
       }
-    }
-    log.fail('Expense not added');
-    return false;
-  }
-
-  async function testValidateExpenseForm() {
-    log.info('=== TS_EXP_002: Expense Form Validation ===');
-    const form = document.getElementById('expense-form');
-    const category = document.getElementById('category');
-    const amount = document.getElementById('amount');
-    const date = document.getElementById('date');
-
-    if (!form || !category || !amount || !date) {
-      log.fail('Expense form elements not found on this page');
-      return false;
+    } catch (error) {
+      results.failed++;
+      console.error('[ERROR] User Registration Test Suite:', error);
     }
 
-    // Test empty category
-    setInputValue(category, '');
-    setInputValue(amount, '25.50');
-    setInputValue(date, '2025-11-01');
-
-    let submitted = false;
-    form.addEventListener(
-      'submit',
-      (e) => {
-        submitted = true;
-        e.preventDefault();
-      },
-      { once: true }
-    );
-    form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-    await delay(150);
-    if (submitted) {
-      log.fail('Form submitted with empty category');
-      return false;
-    }
-    log.pass('Validation blocked submission with empty category');
-
-    // Test invalid amount
-    setInputValue(category, 'Food');
-    setInputValue(amount, 'abc');
-    setInputValue(date, '2025-11-01');
-
-    submitted = false;
-    form.addEventListener(
-      'submit',
-      (e) => {
-        submitted = true;
-        e.preventDefault();
-      },
-      { once: true }
-    );
-    form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-    await delay(150);
-    if (submitted) {
-      log.fail('Form submitted with invalid amount');
-      return false;
-    }
-    log.pass('Validation blocked submission with invalid amount');
-    return true;
-  }
-
-  async function testMonthlySummary() {
-    log.info('=== TS_ANAL_001: Monthly Summary Calculation ===');
-    const auth = getAuthUser();
-    if (!auth) {
-      log.fail('User not logged in. Run login test first.');
-      return false;
-    }
-
-    const storageKey = `expense-tracker:v1:${auth.id}`;
-    const testExpenses = [
-      { id: 't1', user_id: auth.id, category: 'Food', amount: 25.5, date: '2025-11-01' },
-      { id: 't2', user_id: auth.id, category: 'Transport', amount: 10.0, date: '2025-11-05' },
-      { id: 't3', user_id: auth.id, category: 'Coffee', amount: 5.5, date: '2025-11-10' },
-    ];
-    localStorage.setItem(storageKey, JSON.stringify(testExpenses));
-
-    // Trigger any render logic if present
-    if (typeof render === 'function') {
-      try {
-        render();
-      } catch (err) {
-        log.info('Render call failed, continuing with DOM read only');
+    // Test User Login
+    results.total++;
+    try {
+      const passed = await TestCases.testUserLogin();
+      if (passed) {
+        results.passed++;
+        console.log('[PASS] User Login Test Suite');
+      } else {
+        results.failed++;
+        console.log('[FAIL] User Login Test Suite');
       }
+    } catch (error) {
+      results.failed++;
+      console.error('[ERROR] User Login Test Suite:', error);
     }
-    await delay(300);
 
-    const monthlyTotalElement = document.getElementById('monthly-total');
-    if (!monthlyTotalElement) {
-      log.fail('Monthly total element not found on this page');
+    this.printSummary('Authentication Tests', results);
+    return results.failed === 0;
+  },
+
+  /**
+   * Run all expense management tests
+   */
+  async runExpenseTests() {
+    console.log('\n========================================');
+    console.log('Expense Management Tests');
+    console.log('========================================');
+
+    // Check if user is logged in
+    const auth = localStorage.getItem(TestData.keys.auth);
+    if (!auth) {
+      console.error('[ERROR] User must be logged in to run expense tests');
+      console.log('Please run TestSuite.runAuthTests() first or log in manually');
       return false;
     }
 
-    const displayed = parseFloat(String(monthlyTotalElement.textContent).replace(/[^0-9.]+/g, ''));
-    const expected = 25.5 + 10 + 5.5;
+    const results = {
+      total: 0,
+      passed: 0,
+      failed: 0
+    };
 
-    if (Math.abs(displayed - expected) < 0.01) {
-      log.pass('Monthly total calculated correctly', { expected, displayed });
-      return true;
+    // Test Add Expense
+    results.total++;
+    try {
+      const passed = await TestCases.testAddExpense();
+      if (passed) {
+        results.passed++;
+        console.log('[PASS] Add Expense Test Suite');
+      } else {
+        results.failed++;
+        console.log('[FAIL] Add Expense Test Suite');
+      }
+    } catch (error) {
+      results.failed++;
+      console.error('[ERROR] Add Expense Test Suite:', error);
     }
-    log.fail('Monthly total incorrect', { expected, displayed });
-    return false;
-  }
 
-  async function runAuthTests() {
-    const results = [];
-    results.push(await testUserRegistration());
-    results.push(await testUserLogin());
-    summary(results, 'Auth Tests');
-    return results.every(Boolean);
-  }
+    // Test Form Validation
+    results.total++;
+    try {
+      const passed = await TestCases.testValidateExpenseForm();
+      if (passed) {
+        results.passed++;
+        console.log('[PASS] Form Validation Test Suite');
+      } else {
+        results.failed++;
+        console.log('[FAIL] Form Validation Test Suite');
+      }
+    } catch (error) {
+      results.failed++;
+      console.error('[ERROR] Form Validation Test Suite:', error);
+    }
 
-  async function runExpenseTests() {
-    const results = [];
-    results.push(await testAddExpense());
-    results.push(await testValidateExpenseForm());
-    summary(results, 'Expense Tests');
-    return results.every(Boolean);
-  }
+    this.printSummary('Expense Management Tests', results);
+    return results.failed === 0;
+  },
 
-  async function runAnalyticsTests() {
-    const results = [];
-    results.push(await testMonthlySummary());
-    summary(results, 'Analytics Tests');
-    return results.every(Boolean);
-  }
+  /**
+   * Run all analytics tests
+   */
+  async runAnalyticsTests() {
+    console.log('\n========================================');
+    console.log('Analytics Tests');
+    console.log('========================================');
 
-  function summary(results, label) {
-    const passed = results.filter(Boolean).length;
-    const total = results.length;
-    const rate = total ? ((passed / total) * 100).toFixed(1) : '0.0';
-    log.info(`=== ${label} Summary: ${passed}/${total} passed (${rate}%) ===`);
-  }
+    // Check if user is logged in
+    const auth = localStorage.getItem(TestData.keys.auth);
+    if (!auth) {
+      console.error('[ERROR] User must be logged in to run analytics tests');
+      console.log('Please run TestSuite.runAuthTests() first or log in manually');
+      return false;
+    }
 
-  async function runAll() {
-    const onLoginPage = !!document.getElementById('login-form');
-    const onAppPage = !!document.getElementById('expense-form');
-    const results = [];
+    const results = {
+      total: 0,
+      passed: 0,
+      failed: 0
+    };
 
-    if (onLoginPage) {
-      results.push(await testUserRegistration());
-      results.push(await testUserLogin());
+    // Test Monthly Summary
+    results.total++;
+    try {
+      const passed = await TestCases.testMonthlySummary();
+      if (passed) {
+        results.passed++;
+        console.log('[PASS] Monthly Summary Test Suite');
+      } else {
+        results.failed++;
+        console.log('[FAIL] Monthly Summary Test Suite');
+      }
+    } catch (error) {
+      results.failed++;
+      console.error('[ERROR] Monthly Summary Test Suite:', error);
+    }
+
+    this.printSummary('Analytics Tests', results);
+    return results.failed === 0;
+  },
+
+  /**
+   * Run all tests
+   */
+  async runAll() {
+    console.log('\n========================================');
+    console.log('Expense Tracker - Complete Test Suite');
+    console.log('========================================\n');
+
+    const results = {
+      total: 0,
+      passed: 0,
+      failed: 0
+    };
+
+    // Run authentication tests
+    const authResults = await this.runAuthTests();
+    results.total += 2; // Two test suites
+    if (authResults) {
+      results.passed += 2;
     } else {
-      log.info('Login page not detected; skipping auth tests.');
+      results.failed += 2;
     }
 
-    if (onAppPage) {
-      results.push(await testAddExpense());
-      results.push(await testValidateExpenseForm());
-      results.push(await testMonthlySummary());
+    // Check if we can proceed with expense tests
+    const auth = localStorage.getItem(TestData.keys.auth);
+    if (auth) {
+      // Run expense tests
+      const expenseResults = await this.runExpenseTests();
+      results.total += 2; // Two test suites
+      if (expenseResults) {
+        results.passed += 2;
+      } else {
+        results.failed += 2;
+      }
+
+      // Run analytics tests
+      const analyticsResults = await this.runAnalyticsTests();
+      results.total += 1; // One test suite
+      if (analyticsResults) {
+        results.passed += 1;
+      } else {
+        results.failed += 1;
+      }
     } else {
-      log.info('App page not detected; skipping expense/analytics tests.');
+      console.log('\n[SKIP] Expense and Analytics tests require login');
+      console.log('Please log in and run TestSuite.runExpenseTests() and TestSuite.runAnalyticsTests()');
     }
 
-    summary(results, 'Overall Suite');
-    return results.every(Boolean);
+    // Final summary
+    console.log('\n========================================');
+    console.log('Final Test Suite Summary');
+    console.log('========================================');
+    console.log(`Total Test Suites: ${results.total}`);
+    console.log(`Passed: ${results.passed}`);
+    console.log(`Failed: ${results.failed}`);
+    if (results.total > 0) {
+      console.log(`Pass Rate: ${((results.passed / results.total) * 100).toFixed(1)}%`);
+    }
+    console.log('========================================\n');
+
+    return results.failed === 0;
+  },
+
+  /**
+   * Print summary for a test category
+   */
+  printSummary(category, results) {
+    console.log(`\n${category} Summary:`);
+    console.log(`  Total: ${results.total}`);
+    console.log(`  Passed: ${results.passed}`);
+    console.log(`  Failed: ${results.failed}`);
+    if (results.total > 0) {
+      console.log(`  Pass Rate: ${((results.passed / results.total) * 100).toFixed(1)}%`);
+    }
   }
+};
 
-  window.ExpenseTestSuite = {
-    testUserRegistration,
-    testUserLogin,
-    testAddExpense,
-    testValidateExpenseForm,
-    testMonthlySummary,
-    runAuthTests,
-    runExpenseTests,
-    runAnalyticsTests,
-    runAll,
-  };
-})();
-
+// Export for use in other files
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = TestSuite;
+}

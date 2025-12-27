@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expense Tracker - Test Runner</title>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 20px;
+      margin: 0;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: #4ec9b0;
+      border-bottom: 2px solid #4ec9b0;
+      padding-bottom: 10px;
+    }
+    .controls {
+      margin: 20px 0;
+      padding: 15px;
+      background: #252526;
+      border-radius: 5px;
+    }
+    button {
+      background: #0e639c;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin: 5px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #1177bb;
+    }
+    button:disabled {
+      background: #555;
+      cursor: not-allowed;
+    }
+    #console {
+      background: #1e1e1e;
+      border: 1px solid #3e3e42;
+      border-radius: 5px;
+      padding: 15px;
+      min-height: 400px;
+      max-height: 600px;
+      overflow-y: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      white-space: pre-wrap;
+    }
+    .status {
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    .status.loading {
+      background: #3e3e42;
+      color: #d4d4d4;
+    }
+    .status.ready {
+      background: #0e639c;
+      color: white;
+    }
+    .status.error {
+      background: #a1260d;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Expense Tracker - Test Runner</h1>
+    
+    <div class="status loading" id="status">Loading test files...</div>
+    
+    <div class="controls">
+      <button id="run-all" onclick="runAllTests()">Run All Tests</button>
+      <button id="run-auth" onclick="runAuthTests()">Run Auth Tests</button>
+      <button id="run-expense" onclick="runExpenseTests()">Run Expense Tests</button>
+      <button id="run-analytics" onclick="runAnalyticsTests()">Run Analytics Tests</button>
+      <button onclick="clearConsole()">Clear Console</button>
+    </div>
+    
+    <div id="console"></div>
+  </div>
+
+  <script>
+    // Capture console output
+    const consoleDiv = document.getElementById('console');
+    const originalLog = console.log;
+    const originalError = console.error;
+    const originalWarn = console.warn;
+
+    function addToConsole(type, ...args) {
+      const message = args.map(arg => 
+        typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+      ).join(' ');
+      
+      const color = type === 'error' ? '#f48771' : type === 'warn' ? '#dcdcaa' : '#d4d4d4';
+      consoleDiv.innerHTML += `<span style="color: ${color}">${message}</span>\n`;
+      consoleDiv.scrollTop = consoleDiv.scrollHeight;
+    }
+
+    console.log = (...args) => {
+      originalLog.apply(console, args);
+      addToConsole('log', ...args);
+    };
+
+    console.error = (...args) => {
+      originalError.apply(console, args);
+      addToConsole('error', ...args);
+    };
+
+    console.warn = (...args) => {
+      originalWarn.apply(console, args);
+      addToConsole('warn', ...args);
+    };
+
+    function clearConsole() {
+      consoleDiv.innerHTML = '';
+    }
+
+    function updateStatus(message, type = 'loading') {
+      const status = document.getElementById('status');
+      status.textContent = message;
+      status.className = `status ${type}`;
+    }
+
+    // Load test files in order
+    function loadTestFiles() {
+      const files = [
+        'test_assertions.js',
+        'test_data.js',
+        'test_cases.js',
+        'test_suite.js'
+      ];
+
+      let loaded = 0;
+      files.forEach((file, index) => {
+        const script = document.createElement('script');
+        script.src = file;
+        script.onload = () => {
+          loaded++;
+          if (loaded === files.length) {
+            updateStatus('Test files loaded successfully!', 'ready');
+            console.log('All test files loaded. Ready to run tests.');
+          }
+        };
+        script.onerror = () => {
+          updateStatus(`Error loading ${file}`, 'error');
+          console.error(`Failed to load ${file}`);
+        };
+        document.head.appendChild(script);
+      });
+    }
+
+    // Test runner functions
+    async function runAllTests() {
+      if (typeof TestSuite === 'undefined') {
+        console.error('TestSuite not loaded. Please wait for files to load.');
+        return;
+      }
+      clearConsole();
+      console.log('Starting all tests...\n');
+      await TestSuite.runAll();
+    }
+
+    async function runAuthTests() {
+      if (typeof TestSuite === 'undefined') {
+        console.error('TestSuite not loaded. Please wait for files to load.');
+        return;
+      }
+      clearConsole();
+      console.log('Starting authentication tests...\n');
+      await TestSuite.runAuthTests();
+    }
+
+    async function runExpenseTests() {
+      if (typeof TestSuite === 'undefined') {
+        console.error('TestSuite not loaded. Please wait for files to load.');
+        return;
+      }
+      clearConsole();
+      console.log('Starting expense tests...\n');
+      await TestSuite.runExpenseTests();
+    }
+
+    async function runAnalyticsTests() {
+      if (typeof TestSuite === 'undefined') {
+        console.error('TestSuite not loaded. Please wait for files to load.');
+        return;
+      }
+      clearConsole();
+      console.log('Starting analytics tests...\n');
+      await TestSuite.runAnalyticsTests();
+    }
+
+    // Load test files when page loads
+    window.addEventListener('load', () => {
+      loadTestFiles();
+    });
+  </script>
+</body>
+</html>
+
